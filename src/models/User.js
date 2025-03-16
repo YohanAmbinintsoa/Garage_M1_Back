@@ -9,7 +9,9 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     birthdate: { type: Date, required: true },
-    role:{type:[], required:true}
+    address : {type : String , required : true} ,
+    phone : {type : String , required : true } ,
+    state: { type : Number , required : true}
 }, { timestamps: true });
 
 UserSchema.pre('save', async function (next) {
