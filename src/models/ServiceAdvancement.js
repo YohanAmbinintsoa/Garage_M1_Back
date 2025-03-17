@@ -1,0 +1,1 @@
+// atao table ajoutena ny avancement traitement service : => atao somme dia zay no avancement service ray

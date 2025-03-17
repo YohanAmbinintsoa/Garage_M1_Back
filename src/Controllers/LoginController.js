@@ -15,8 +15,9 @@ router.post('/login', async (req, res) => {
 
         // Vérifier le mot de passe avec bcrypt
         const isPasswordValid = await bcrypt.compare(password, currentUser.password);
+        console.log(currentUser.password)
         if (!isPasswordValid) {
-            return res.status(401).json({ error: "Vérifiez vos identifiants !" });
+            return res.status(401).json({ error: "Vérifiez vos identifiants MDP!" });
         }
         console.log("METY LE LOGIN")
 
@@ -26,7 +27,9 @@ router.post('/login', async (req, res) => {
             username: currentUser.username,
             email: currentUser.email,
             birthdate: currentUser.birthdate,
-            roles: currentUser.role
+            address: currentUser.address,
+            phone: currentUser.phone,
+            
         });
 
     } catch (error) {
@@ -36,7 +39,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const { name, firstname, username, email, password, birthdate, role } = req.body;
+    const { name, firstname, username, email, password, birthdate, address , phone , state } = req.body;
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -51,7 +54,9 @@ router.post('/register', async (req, res) => {
             email,
             password: hashedPassword,
             birthdate,
-            role
+            address,
+            phone,
+            state 
         });
         await newUser.save();
 
@@ -62,7 +67,9 @@ router.post('/register', async (req, res) => {
                 username: newUser.username,
                 email: newUser.email,
                 birthdate: newUser.birthdate,
-                roles: newUser.role
+                address: newUser.address,
+                phone: newUser.phone,
+                role: newUser.state
             }
         });
     } catch (error) {
