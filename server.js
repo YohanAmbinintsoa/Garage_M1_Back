@@ -18,7 +18,8 @@ mongoose.connect(process.env.MONGO_URI, {
     }).then(() => console.log("MongoDB connecté")) 
       .catch(err => console.log(err)); 
 
-app.use("/auth",require("./src/routes/Login"))
+app.use("/auth",require("./src/Controllers/LoginController"))
+app.use("/tests", require("./src/Controllers/TestController"))
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
