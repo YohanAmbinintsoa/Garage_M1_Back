@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require("../Models/User");
 const bcrypt = require('bcrypt');
+require("dotenv").config();
+const jwt = require('jsonwebtoken');
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -13,13 +15,24 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: "Vérifiez vos identifiants !" });
         }
 
-        // Vérifier le mot de passe avec bcrypt
         const isPasswordValid = await bcrypt.compare(password, currentUser.password);
         console.log(currentUser.password)
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Vérifiez vos identifiants MDP!" });
         }
-        console.log("METY LE LOGIN")
+
+        const token = jwt.sign(
+            {
+                id: currentUser._id,
+                name: currentUser.name,
+                firstname: currentUser.firstname,
+                username: currentUser.username,
+                email: currentUser.email,
+                role: currentUser.role, // Ensure the user model has a 'role' field
+            },
+            process.env.JWT_SECRET, // Store secret in .env
+            { expiresIn: "24h" } // Token expires in 2 hours
+        );
 
         res.status(200).json({
             name: currentUser.name,
@@ -29,7 +42,7 @@ router.post('/login', async (req, res) => {
             birthdate: currentUser.birthdate,
             address: currentUser.address,
             phone: currentUser.phone,
-            
+            token: token
         });
 
     } catch (error) {

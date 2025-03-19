@@ -19,27 +19,26 @@ mongoose.connect(process.env.MONGO_URI, {
       .catch(err => console.log(err)); 
 
 app.use("/auth",require("./src/Controllers/LoginController"))
-app.use("/tests", require("./src/Controllers/TestController"))
 
-const carBrandRoutes = require('./src/routes/carBrandRoutes');
+const carBrandRoutes = require('./src/Controllers/carBrandRoutes');
 app.use('/carBrands', carBrandRoutes);
 
-const carModelRoutes = require('./src/routes/carModelRoutes');
+const carModelRoutes = require('./src/Controllers/carModelRoutes');
 app.use('/carModels', carModelRoutes);
 
-const carRoutes = require('./src/routes/carRoutes');
+const carRoutes = require('./src/Controllers/carRoutes');
 app.use('/cars', carRoutes); 
 
-const articleRoutes = require('./src/routes/articleRoutes');
+const articleRoutes = require('./src/Controllers/articleRoutes');
 app.use('/articles', articleRoutes);
 
-const articleCategoryRoutes = require('./src/routes/articleCategoryRoutes');
+const articleCategoryRoutes = require('./src/Controllers/articleCategoryRoutes');
 app.use('/articleCategories', articleCategoryRoutes);
 
-const serviceRoutes = require('./src/routes/serviceRoutes'); 
+const serviceRoutes = require('./src/Controllers/serviceRoutes'); 
 app.use('/services', serviceRoutes);
 
-const rdvRoutes = require('./src/routes/rdvRoutes');
+const rdvRoutes = require('./src/Controllers/rdvRoutes');
 app.use('/rdvs', rdvRoutes);
 
 app.listen(PORT, () => {
