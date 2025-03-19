@@ -41,6 +41,24 @@ app.use('/services', serviceRoutes);
 const rdvRoutes = require('./src/routes/rdvRoutes');
 app.use('/rdvs', rdvRoutes);
 
+const parkRoutes = require('./src/routes/parkRoutes');
+app.use('/parks', parkRoutes);
+
+const employeeSpecialityRoutes = require('./src/routes/employeeSpecialityRoutes');
+app.use('/employeeSpecialities', employeeSpecialityRoutes);
+
+const employeeRoutes = require('./src/routes/employeeRoutes');
+app.use('/employees', employeeRoutes);
+
+const clientServiceRoutes = require('./src/routes/clientServiceRoutes');
+app.use('/clientServices', clientServiceRoutes);
+
+const clientServiceFactureRoutes = require('./src/routes/clientServiceFactureRoutes');
+app.use('/clientServiceFactures', clientServiceFactureRoutes);
+
+const employeeSalaryRoutes = require('./src/routes/employeeSalaryRoutes');
+app.use('/employeeSalaries', employeeSalaryRoutes);
+
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
