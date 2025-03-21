@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const { name, firstname, username, email, password, birthdate, address , phone , state } = req.body;
+    const { name, firstname, username, email, password, birthdate, address , phone  } = req.body;
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -69,9 +69,22 @@ router.post('/register', async (req, res) => {
             birthdate,
             address,
             phone,
-            state 
+            state : 0
         });
         await newUser.save();
+
+        const token = jwt.sign(
+            {
+                id: newUser._id,
+                name: newUser.name,
+                firstname: newUser.firstname,
+                username: newUser.username,
+                email: newUser.email,
+                role: newUser.role, 
+            },
+            process.env.JWT_SECRET, 
+            { expiresIn: "24h" } 
+        );
 
         res.status(201).json({
             message: "Utilisateur enregistré avec succès !", user: {
@@ -83,7 +96,8 @@ router.post('/register', async (req, res) => {
                 address: newUser.address,
                 phone: newUser.phone,
                 role: newUser.state
-            }
+            },
+            token: token
         });
     } catch (error) {
         console.error(error);
