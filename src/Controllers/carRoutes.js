@@ -1,7 +1,7 @@
 const express = require('express');
 const Car = require('../models/Car');
 const CarModel = require('../models/CarModel');
-const User = require('../Models/User'); // Import User model to check if the owner exists
+const User = require('../models/User'); // Import User model to check if the owner exists
 const router = express.Router();
 
 // 1. Create a new car
