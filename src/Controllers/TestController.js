@@ -1,5 +1,5 @@
 const express = require('express');
-const Test = require('../Models/Test'); // Import Test model
+const Test = require('../models/Test'); // Import Test model
 
 const router = express.Router();
 
