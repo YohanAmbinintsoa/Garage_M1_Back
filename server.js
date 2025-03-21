@@ -19,7 +19,6 @@ mongoose.connect(process.env.MONGO_URI, {
       .catch(err => console.log(err)); 
 
 app.use("/auth",require("./src/Controllers/LoginController"))
-app.use("/tests", require("./src/Controllers/TestController"))
 
 const carBrandRoutes = require('./src/Controllers/carBrandRoutes');
 app.use('/carBrands', carBrandRoutes);
