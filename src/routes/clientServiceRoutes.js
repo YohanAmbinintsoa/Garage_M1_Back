@@ -58,4 +58,50 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.get('/client/:clientId', async (req, res) => {
+    try {
+        const { clientId } = req.params;
+        const { startDate, endDate } = req.query;
+
+        let filter = { client: clientId };
+
+        if (startDate && endDate) {
+            filter.createdAt = { 
+                $gte: new Date(startDate), 
+                $lte: new Date(endDate) 
+            };
+        }
+
+        const clientServices = await ClientService.find(filter)
+            .populate('service')
+            .populate('car')
+            .populate('park');
+
+        res.json(clientServices);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/inProgress', async (req, res) => {
+    try {
+        const { userId } = req.query; 
+        const filter = { advancement: { $ne: 100 } }; // Filtrer advancement != 100
+
+        if (userId) {
+            filter.client = userId; 
+        }
+
+        const clientServices = await ClientService.find(filter)
+            .populate('client')   
+            .populate('service')  
+            .populate('car')     
+            .populate('park');   
+
+        res.json(clientServices);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

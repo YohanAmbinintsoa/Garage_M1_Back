@@ -1,61 +1,95 @@
 const express = require('express');
+const ClientServiceFacture = require('../models/clientServiceFacture');
+const ClientService = require('../models/ClientService');
+
 const router = express.Router();
-const ClientServiceFacture = require('../models/ClientServiceFacture');
 
 // Create ClientServiceFacture
 router.post('/', async (req, res) => {
     try {
-        const { clientService, article, quantity, unitPrice } = req.body;
-        const clientServiceFacture = new ClientServiceFacture({ clientService, article, quantity, unitPrice });
+        const clientServiceFacture = new ClientServiceFacture(req.body);
         await clientServiceFacture.save();
         res.status(201).json(clientServiceFacture);
     } catch (error) {
-        res.status(500).json({ error: "Error creating ClientServiceFacture" });
+        res.status(400).json({ error: error.message });
     }
 });
 
-// Get All ClientServiceFactures
+// Get all ClientServiceFactures
 router.get('/', async (req, res) => {
     try {
-        const clientServiceFactures = await ClientServiceFacture.find().populate('clientService article');
-        res.status(200).json(clientServiceFactures);
+        const factures = await ClientServiceFacture.find().populate('clientService').populate('factureRows.article');
+        res.json(factures);
     } catch (error) {
-        res.status(500).json({ error: "Error fetching ClientServiceFactures" });
+        res.status(500).json({ error: error.message });
     }
 });
 
 // Get ClientServiceFacture by ID
 router.get('/:id', async (req, res) => {
     try {
-        const clientServiceFacture = await ClientServiceFacture.findById(req.params.id).populate('clientService article');
-        if (!clientServiceFacture) return res.status(404).json({ error: "ClientServiceFacture not found" });
-        res.status(200).json(clientServiceFacture);
+        const facture = await ClientServiceFacture.findById(req.params.id).populate('clientService').populate('factureRows.article');
+        if (!facture) return res.status(404).json({ error: "Facture not found" });
+        res.json(facture);
     } catch (error) {
-        res.status(500).json({ error: "Error fetching ClientServiceFacture" });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Update ClientServiceFacture
-router.put('/:id', async (req, res) => {
+// Add a new row to factureRows (update existing facture)
+router.put('/:id/addRow', async (req, res) => {
     try {
-        const { clientService, article, quantity, unitPrice } = req.body;
-        const clientServiceFacture = await ClientServiceFacture.findByIdAndUpdate(req.params.id, { clientService, article, quantity, unitPrice }, { new: true });
-        if (!clientServiceFacture) return res.status(404).json({ error: "ClientServiceFacture not found" });
-        res.status(200).json(clientServiceFacture);
+        const { article, quantity, unitPrice } = req.body;
+        const facture = await ClientServiceFacture.findById(req.params.id);
+        
+        if (!facture) return res.status(404).json({ error: "Facture not found" });
+
+        // Append new facture row
+        facture.factureRows.push({ article, quantity, unitPrice });
+
+        await facture.save();
+        res.json(facture);
     } catch (error) {
-        res.status(500).json({ error: "Error updating ClientServiceFacture" });
+        res.status(400).json({ error: error.message });
     }
 });
 
 // Delete ClientServiceFacture
 router.delete('/:id', async (req, res) => {
     try {
-        const clientServiceFacture = await ClientServiceFacture.findByIdAndDelete(req.params.id);
-        if (!clientServiceFacture) return res.status(404).json({ error: "ClientServiceFacture not found" });
-        res.status(200).json({ message: "ClientServiceFacture deleted successfully" });
+        const facture = await ClientServiceFacture.findByIdAndDelete(req.params.id);
+        if (!facture) return res.status(404).json({ error: "Facture not found" });
+        res.json({ message: "Facture deleted successfully" });
     } catch (error) {
-        res.status(500).json({ error: "Error deleting ClientServiceFacture" });
+        res.status(500).json({ error: error.message });
     }
 });
+
+router.get('/client/:clientId', async (req, res) => {
+    try {
+        const { clientId } = req.params;
+
+        // Find all ClientService IDs related to the client
+        const clientServices = await ClientService.find({ client: clientId }).select('_id');
+
+        if (clientServices.length === 0) {
+            return res.status(404).json({ error: "Aucune facture trouvée pour ce client" });
+        }
+
+        // Extract the clientService IDs
+        const clientServiceIds = clientServices.map(cs => cs._id);
+
+        // Retrieve factures linked to those clientService IDs
+        const factures = await ClientServiceFacture.find({ clientService: { $in: clientServiceIds } })
+            .populate('clientService')
+            .populate('factureRows.article');
+
+        res.json(factures);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+module.exports = router;
 
 module.exports = router;

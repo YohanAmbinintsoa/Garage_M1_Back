@@ -98,4 +98,23 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Get all cars for a specific user
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params; // Get the user ID from the URL parameters
+
+        const cars = await Car.find({ owner: userId }) // Find cars where the owner matches the userId
+            .populate('carModel') // Populate the carModel field with full details
+            .populate('owner'); // Populate the owner field with full details
+
+        if (cars.length === 0) {
+            return res.status(404).json({ error: "No cars found for this user" });
+        }
+
+        res.json(cars);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

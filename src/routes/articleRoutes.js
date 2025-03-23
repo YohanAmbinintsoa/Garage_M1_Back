@@ -38,4 +38,20 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get all articles for a specific category
+router.get('/category/:categoryId', async (req, res) => {
+    try {
+        const { categoryId } = req.params; 
+        const articles = await Article.find({ articleCategory: categoryId })
+            .populate('articleCategory');
+            
+        if (articles.length === 0) {
+            return res.status(404).json({ error: "No articles found for this category" });
+        }
+
+        res.json(articles);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 module.exports = router;

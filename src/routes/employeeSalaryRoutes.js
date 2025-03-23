@@ -58,4 +58,41 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Get the current salary of an employee (latest salary record)
+router.get('/current/:employeeId', async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+
+        const currentSalary = await EmployeeSalary.findOne({ employee: employeeId })
+            .sort({ createdAt: -1 }) // Get the most recent salary
+            .limit(1);
+
+        if (!currentSalary) {
+            return res.status(404).json({ error: "No salary record found for this employee" });
+        }
+
+        res.json(currentSalary);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get all salary records of an employee
+router.get('/history/:employeeId', async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+
+        const salaryHistory = await EmployeeSalary.find({ employee: employeeId })
+            .sort({ createdAt: -1 }); // Sort by date (latest first)
+
+        if (salaryHistory.length === 0) {
+            return res.status(404).json({ error: "No salary records found for this employee" });
+        }
+
+        res.json(salaryHistory);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
