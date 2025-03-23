@@ -1,115 +1,38 @@
 const express = require('express');
 const router = express.Router();
-const User = require("../models/User");
-const bcrypt = require('bcrypt');
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
+const authService = require('../Services/AuthServices');
+
 
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-
     try {
-        const currentUser = await User.findOne({ email });
-
-        if (!currentUser) {
-            return res.status(401).json({ error: "Vérifiez vos identifiants !" });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, currentUser.password);
-        console.log(currentUser.password)
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: "Vérifiez vos identifiants MDP!" });
-        }
-
-        const token = jwt.sign(
-            {
-                id: currentUser._id,
-                name: currentUser.name,
-                firstname: currentUser.firstname,
-                username: currentUser.username,
-                email: currentUser.email,
-                role: currentUser.role, // Ensure the user model has a 'role' field
-            },
-            process.env.JWT_SECRET, // Store secret in .env
-            { expiresIn: "24h" } // Token expires in 2 hours
-        );
-
-        res.status(200).json({
-            name: currentUser.name,
-            firstname: currentUser.firstname,
-            username: currentUser.username,
-            email: currentUser.email,
-            birthdate: currentUser.birthdate,
-            address: currentUser.address,
-            phone: currentUser.phone,
-            token: token
+        const userData = await authService.login(req);
+        return res.status(200).json({
+            message: "Login succès !",
+            user: userData,
+            token: userData.token
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Une erreur s'est produite !" });
+        console.log(error.message)
+        return res.status(401).json({ error: error.message });
     }
 });
 
 router.post('/register', async (req, res) => {
-    const { name, firstname, username, email, password, birthdate, address , phone  } = req.body;
     try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ error: "Cet email est déjà utilisé !" });
-        }
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const newUser = new User({
-            name,
-            firstname,
-            username,
-            email,
-            password: hashedPassword,
-            birthdate,
-            address,
-            phone,
-            state : 0
-        });
-        await newUser.save();
+        const userData = await authService.register(req);
 
-        const token = jwt.sign(
-            {
-                id: newUser._id,
-                name: newUser.name,
-                firstname: newUser.firstname,
-                username: newUser.username,
-                email: newUser.email,
-                role: newUser.role, 
-            },
-            process.env.JWT_SECRET, 
-            { expiresIn: "24h" } 
-        );
-
-        res.status(201).json({
-            message: "Utilisateur enregistré avec succès !", user: {
-                name: newUser.name,
-                firstname: newUser.firstname,
-                username: newUser.username,
-                email: newUser.email,
-                birthdate: newUser.birthdate,
-                address: newUser.address,
-                phone: newUser.phone,
-                role: newUser.state
-            },
-            token: token
+        return res.status(201).json({
+            message: "Inscription succès !",
+            user: userData,
+            token: userData.token
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Une erreur s'est produite lors de l'inscription !" });
+        return res.status(401).json({ error: error.message });
     }
+    
 });
-
-router.get('/test', async (req, res) => {
-    res.status(200).json({
-        message : "Mety ehhh"
-    })
-});
-
 
 module.exports = router;
