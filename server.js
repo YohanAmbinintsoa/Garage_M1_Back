@@ -41,22 +41,22 @@ app.use('/services', serviceRoutes);
 const rdvRoutes = require('./src/Controllers/rdvRoutes');
 app.use('/rdvs', rdvRoutes);
 
-const parkRoutes = require('./src/routes/parkRoutes');
+const parkRoutes = require('./src/Controllers/parkRoutes');
 app.use('/parks', parkRoutes);
 
-const employeeSpecialityRoutes = require('./src/routes/employeeSpecialityRoutes');
+const employeeSpecialityRoutes = require('./src/Controllers/employeeSpecialityRoutes');
 app.use('/employeeSpecialities', employeeSpecialityRoutes);
 
-const employeeRoutes = require('./src/routes/employeeRoutes');
+const employeeRoutes = require('./src/Controllers/employeeRoutes');
 app.use('/employees', employeeRoutes);
 
-const clientServiceRoutes = require('./src/routes/clientServiceRoutes');
+const clientServiceRoutes = require('./src/Controllers/clientServiceRoutes');
 app.use('/clientServices', clientServiceRoutes);
 
-const clientServiceFactureRoutes = require('./src/routes/clientServiceFactureRoutes');
+const clientServiceFactureRoutes = require('./src/Controllers/clientServiceFactureRoutes');
 app.use('/clientServiceFactures', clientServiceFactureRoutes);
 
-const employeeSalaryRoutes = require('./src/routes/employeeSalaryRoutes');
+const employeeSalaryRoutes = require('./src/Controllers/employeeSalaryRoutes');
 app.use('/employeeSalaries', employeeSalaryRoutes);
 
 app.listen(PORT, () => {
