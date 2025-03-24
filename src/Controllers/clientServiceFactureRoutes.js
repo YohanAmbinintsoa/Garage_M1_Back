@@ -1,5 +1,5 @@
 const express = require('express');
-const ClientServiceFacture = require('../models/clientServiceFacture');
+const ClientServiceFacture = require('../models/ClientServiceFacture');
 const ClientService = require('../models/ClientService');
 
 const router = express.Router();
