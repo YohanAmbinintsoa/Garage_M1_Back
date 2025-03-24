@@ -74,5 +74,33 @@ router.get('/client/:clientId', async (req, res) => {
     }
 });
 
+// Get all RDVs for a specific client, with optional state filter
+router.get('/client/:clientId', async (req, res) => {
+    try {
+        const { clientId } = req.params; // Get the client ID from the URL parameters
+        const { state } = req.query; // Get the state from the query parameters (if provided)
+
+        // Build the filter object
+        let filter = { client: clientId };
+
+        if (state) {
+            filter.state = state; // Add state to the filter if specified
+        }
+
+        // Retrieve the RDVs from the database with the filter
+        const rdvs = await RDV.find(filter)
+            .populate('service') // Populate the service field with full details
+            .populate('car') // Populate the car field with full details
+            .populate('client'); // Populate the client field with full details
+
+        if (rdvs.length === 0) {
+            return res.status(404).json({ error: "No RDVs found for this client" });
+        }
+
+        res.json(rdvs);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 module.exports = router;
