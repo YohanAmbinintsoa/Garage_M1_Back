@@ -45,6 +45,7 @@ class AuthService {
                 birthdate: currentUser.birthdate,
                 address: currentUser.address,
                 phone: currentUser.phone,
+                role : currentUser.state,
                 token: token
             };
         } catch (error) {
