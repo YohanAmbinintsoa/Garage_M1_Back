@@ -4,7 +4,7 @@ require("dotenv").config();
 const jwt = require('jsonwebtoken');
 
 class AuthService {
-    async login(req) {
+    async login(req, res) {
         const { email, password, role } = req.body;
 
         try {
@@ -53,7 +53,7 @@ class AuthService {
         }
     }
 
-    async register(req) {
+    async register(req, res) {
         const { name, firstname, username, email, password, birthdate, address, phone } = req.body;
         try {
             const existingUser = await User.findOne({ email });
