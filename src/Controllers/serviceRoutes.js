@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Service = require('../models/Service');
 const Article = require('../models/Article');
+const ClientServiceFacture = require('../models/ClientServiceFacture');
+const ClientService = require('../models/ClientService');
 
 
 router.post('/', async (req, res) => {
@@ -89,5 +91,60 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ error: "An error occurred while deleting the service" });
     }
 });
+
+router.get('/:clientServiceId', async (req, res) => {
+    try {
+        const { clientServiceId } = req.params;
+
+        const factures = await ClientServiceFacture.find({ clientService: clientServiceId })
+            .populate('factureRows.article'); // Populate article details in facture rows
+
+        if (!factures || factures.length === 0) {
+            return res.status(404).json({ error: "No factures found for this client service" });
+        }
+
+        res.json(factures);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get all factures for a specific service
+router.get('/factures/:serviceId', async (req, res) => {
+    try {
+        const { serviceId } = req.params;
+        const { startDate, endDate } = req.query;
+
+        const dateFilter = {};
+        if (startDate) dateFilter.createdAt = { $gte: new Date(startDate) };
+        if (endDate) {
+            dateFilter.createdAt = dateFilter.createdAt || {};
+            dateFilter.createdAt.$lte = new Date(endDate);
+        }
+
+        // Find all ClientServices related to the given service
+        const clientServices = await ClientService.find({ service: serviceId }).select('_id');
+
+        if (clientServices.length === 0) {
+            return res.status(404).json({ error: "No client services found for this service" });
+        }
+
+        // Extract clientService IDs
+        const clientServiceIds = clientServices.map(cs => cs._id);
+
+        // Find all factures related to those clientServices
+        const factures = await ClientServiceFacture.find({ clientService: { $in: clientServiceIds } })
+            .populate('factureRows.article');
+
+        if (factures.length === 0) {
+            return res.status(404).json({ error: "No factures found for this service" });
+        }
+
+        res.json(factures);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = router;
