@@ -18,6 +18,8 @@ class AuthService {
                 throw new Error("Vérifiez vos identifiants !");
             }
 
+            console.log(currentUser);
+
             const isPasswordValid = await bcrypt.compare(password, currentUser.password);
 
             if (!isPasswordValid) {
@@ -31,7 +33,7 @@ class AuthService {
                     firstname: currentUser.firstname,
                     username: currentUser.username,
                     email: currentUser.email,
-                    role: currentUser.role, // Use 'role' instead of 'state'
+                    role: currentUser.state, // Use 'role' instead of 'state'
                 },
                 process.env.JWT_SECRET, // Ensure secret is in .env
                 { expiresIn: "24h" }
