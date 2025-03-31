@@ -7,7 +7,7 @@ const authService = require('../Services/AuthServices');
 
 router.post('/login', async (req, res) => {
     try {
-        const userData = await authService.login(req);
+        const userData = await authService.login(req, res);
         return res.status(200).json({
             message: "Login succès !",
             user: userData,
@@ -22,7 +22,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
     try {
-        const userData = await authService.register(req);
+        const userData = await authService.register(req, res);
 
         return res.status(201).json({
             message: "Inscription succès !",
