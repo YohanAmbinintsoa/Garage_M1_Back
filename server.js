@@ -59,6 +59,9 @@ app.use('/clientServiceFactures', clientServiceFactureRoutes);
 const employeeSalaryRoutes = require('./src/Controllers/employeeSalaryRoutes');
 app.use('/employeeSalaries', employeeSalaryRoutes);
 
+const stockRoutes = require('./src/Controllers/stockRoutes');
+app.use('/stocks',stockRoutes);
+
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
