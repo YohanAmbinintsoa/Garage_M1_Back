@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const { verifyToken, verifyRole } = require('./src/Middlewares/AuthMiddleware');
 const cors= require('cors');
 require("dotenv").config();
 const PORT = process.env.PORT || 8080;
@@ -21,25 +22,25 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use("/auth",require("./src/Controllers/LoginController"))
 
 const carBrandRoutes = require('./src/Controllers/carBrandRoutes');
-app.use('/carBrands', carBrandRoutes);
+app.use('/carBrands',verifyToken, carBrandRoutes);
 
 const carModelRoutes = require('./src/Controllers/carModelRoutes');
-app.use('/carModels', carModelRoutes);
+app.use('/carModels', verifyToken,carModelRoutes);
 
 const carRoutes = require('./src/Controllers/carRoutes');
-app.use('/cars', carRoutes); 
+app.use('/cars', verifyToken, carRoutes); 
 
 const articleRoutes = require('./src/Controllers/articleRoutes');
-app.use('/articles', articleRoutes);
+app.use('/articles', verifyToken, articleRoutes);
 
 const articleCategoryRoutes = require('./src/Controllers/articleCategoryRoutes');
-app.use('/articleCategories', articleCategoryRoutes);
+app.use('/articleCategories', verifyToken, articleCategoryRoutes);
 
 const serviceRoutes = require('./src/Controllers/serviceRoutes'); 
-app.use('/services', serviceRoutes);
+app.use('/services', verifyToken, serviceRoutes);
 
 const rdvRoutes = require('./src/Controllers/rdvRoutes');
-app.use('/rdvs', rdvRoutes);
+app.use('/rdvs', verifyToken, rdvRoutes);
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);

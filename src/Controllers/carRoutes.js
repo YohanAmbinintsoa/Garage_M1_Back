@@ -7,15 +7,15 @@ const router = express.Router();
 // 1. Create a new car
 router.post('/', async (req, res) => {
     try {
-        const { designation, carModel, year, owner } = req.body;
+        const { designation, carModel, year } = req.body;
 
-        // Check if the car model exists
+        const owner = req.user.id;
+
         const modelExist = await CarModel.findById(carModel);
         if (!modelExist) {
             return res.status(404).json({ message: 'Car model not found' });
         }
 
-        // Check if the owner exists
         const ownerExist = await User.findById(owner);
         if (!ownerExist) {
             return res.status(404).json({ message: 'User (owner) not found' });
@@ -36,6 +36,20 @@ router.get('/', async (req, res) => {
         res.status(200).json(cars);
     } catch (err) {
         res.status(400).json({ message: 'Error fetching cars', error: err });
+    }
+});
+
+router.get('/my-cars', async (req, res) => {
+    try {
+        const ownerId = req.user.id;
+        
+        const cars = await Car.find({ owner: ownerId })
+            .populate('carModel')
+            .populate('owner', '-password'); // Exclude password field from owner data
+        
+        res.status(200).json(cars);
+    } catch (err) {
+        res.status(400).json({ message: 'Error fetching your cars', error: err });
     }
 });
 
