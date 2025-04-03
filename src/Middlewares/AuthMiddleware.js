@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
 // Middleware to check user role
 const verifyRole = (requiredRole) => {
     return (req, res, next) => {
-        if (!req.user || req.user.role !== requiredRole) {
+        if (!req.user || req.user.state < requiredRole) {
             return res.status(403).json({ error: "Accès refusé, privilèges insuffisants !" });
         }
         next();

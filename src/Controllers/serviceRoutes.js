@@ -147,4 +147,24 @@ router.get('/factures/:serviceId', async (req, res) => {
 });
 
 
+router.put('/addMandatoryArticle/:serviceId', async (req, res) => {
+    try {
+        const { serviceId } = req.params;
+        const { articleId, quantity } = req.body;
+
+        if (!articleId || !quantity) {
+            return res.status(400).json({ error: "articleId and quantity are required" });
+        }
+
+        await Service.updateOne(
+            { _id: serviceId },
+            { $push: { mandatoryArticles: { article: articleId, quantity: quantity } } }
+        );
+
+        res.json({ message: "Article added successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
