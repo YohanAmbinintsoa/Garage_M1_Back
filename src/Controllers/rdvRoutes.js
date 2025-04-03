@@ -4,11 +4,14 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
     try {
-        const { client, service, car, rdvDate, remark, state } = req.body;
+        const { service, car, rdvDate, remark } = req.body;
+        const client = req.user.id;
+        const state = 0;
         const newRDV = new RDV({ client, service, car, rdvDate, remark, state });
         await newRDV.save();
         res.status(201).json(newRDV);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: "Error creating RDV" });
     }
 });
