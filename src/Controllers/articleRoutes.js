@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Article = require('../models/Article');
 const ArticleCategory = require('../models/ArticleCategory');
+const ArticlePrice = require('../models/ArticlePrice');
 
 // Create Article
 router.post('/', async (req, res) => {
@@ -50,6 +51,43 @@ router.get('/category/:categoryId', async (req, res) => {
         }
 
         res.json(articles);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Insert a new ArticlePrice
+router.post('/unitPrice', async (req, res) => {
+    try {
+        const { article, unitPrice } = req.body;
+
+        if (!article || !unitPrice) {
+            return res.status(400).json({ error: "Article and unitPrice are required" });
+        }
+
+        const newArticlePrice = new ArticlePrice({ article, unitPrice });
+        await newArticlePrice.save();
+
+        res.status(201).json(newArticlePrice);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get the latest unit price of an article
+router.get('/unitPrice/actual/:articleId', async (req, res) => {
+    try {
+        const { articleId } = req.params;
+
+        const latestPrice = await ArticlePrice.findOne({ article: articleId })
+            .sort({ createdAt: -1 }) // Get the latest entry
+            .select('unitPrice');
+
+        if (!latestPrice) {
+            return res.status(404).json({ error: "No price found for this article" });
+        }
+
+        res.json(latestPrice);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

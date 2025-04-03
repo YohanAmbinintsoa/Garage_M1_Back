@@ -58,6 +58,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+//client services between 2 dates
 router.get('/client/:clientId', async (req, res) => {
     try {
         const { clientId } = req.params;
@@ -83,6 +84,7 @@ router.get('/client/:clientId', async (req, res) => {
     }
 });
 
+//retrieve all services in progress
 router.get('/inProgress', async (req, res) => {
     try {
         const { userId } = req.query; 

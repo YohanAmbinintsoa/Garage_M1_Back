@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Service = require('../models/Service');
 const Article = require('../models/Article');
+const ClientServiceFacture = require('../models/ClientServiceFacture');
+const ClientService = require('../models/ClientService');
 
 
 router.post('/', async (req, res) => {
@@ -144,7 +146,7 @@ router.get('/factures/:serviceId', async (req, res) => {
     }
 });
 
-// Add an article to mandatoryArticles
+
 router.put('/addMandatoryArticle/:serviceId', async (req, res) => {
     try {
         const { serviceId } = req.params;

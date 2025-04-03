@@ -13,5 +13,8 @@ const EmployeeSchema = new mongoose.Schema({
     state: { type: Number, required: true },
     chief : {type: mongoose.Schema.Types.ObjectId, ref: 'Employee'}
 }, { timestamps: true });
+// 0 : simple mecano
+// 3 : chief mecano
+// 5 : manager
 
 module.exports = mongoose.model('Employee', EmployeeSchema);
